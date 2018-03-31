@@ -1,11 +1,12 @@
 {
-  "main.css": "static/css/main.3ad4abde.css",
-  "main.css.map": "static/css/main.3ad4abde.css.map",
-  "main.js": "static/js/main.c76a7feb.js",
-  "main.js.map": "static/js/main.c76a7feb.js.map",
-  "static/js/0.c9deaf1b.chunk.js": "static/js/0.c9deaf1b.chunk.js",
-  "static/js/0.c9deaf1b.chunk.js.map": "static/js/0.c9deaf1b.chunk.js.map",
-  "static/media/arrow.svg": "static/media/arrow.0f408eda.svg",
+  "main.css": "static/css/main.0f21c171.css",
+  "main.css.map": "static/css/main.0f21c171.css.map",
+  "main.js": "static/js/main.db9cee33.js",
+  "main.js.map": "static/js/main.db9cee33.js.map",
+  "static/js/0.714d2fbf.chunk.js": "static/js/0.714d2fbf.chunk.js",
+  "static/js/0.714d2fbf.chunk.js.map": "static/js/0.714d2fbf.chunk.js.map",
   "static/media/ether-diamond.gif": "static/media/ether-diamond.d0d979a9.gif",
-  "static/media/paw.svg": "static/media/paw.d1cf5245.svg"
+  "static/media/like.svg": "static/media/like.9907fd49.svg",
+  "static/media/paw.svg": "static/media/paw.d1cf5245.svg",
+  "static/media/reply.svg": "static/media/reply.1cdb5f29.svg"
 }
