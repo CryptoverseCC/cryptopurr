@@ -74,29 +74,35 @@ class Share extends Component {
     const { author, message, etherscanUrl } = this.props;
     this.setState({ loading: true });
 
-    toIpfsImage(message, `https://cryptopurr.co/${author}`, etherscanUrl, author).then((ipfsUrl) => {
-      let newWindow;
-      switch (type) {
-        case 'tweet':
-          const linkToShare = `https://us-central1-cryptopurr.cloudfunctions.net/share?img=${encodeURIComponent(
-            ipfsUrl,
-          )}&title=${author}&description=${encodeURIComponent(message)}`;
-          newWindow = window.open(
-            `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(
-              linkToShare,
-            )}&via=CryptopurrC`,
-            '_blank',
-          );
-          break;
-        default:
-          newWindow = window.open(ipfsUrl, '_blank');
-      }
+    toIpfsImage(message, `https://cryptopurr.co/${author}`, etherscanUrl, author)
+      .then((ipfsUrl) => {
+        const encodedMessage = encodeURIComponent(message);
 
-      if (newWindow && newWindow.opener) {
-        newWindow.opener = null;
-      }
-      this.setState({ loading: false });
-    });
+        let newWindow;
+        switch (type) {
+          case 'tweet':
+            const encodedlinkToShare = encodeURIComponent(
+              `https://share.cryptopurr.co/share/?img=${encodeURIComponent(
+                ipfsUrl,
+              )}&title=${author}&description=${encodedMessage}`,
+            );
+            newWindow = window.open(
+              `https://twitter.com/intent/tweet?text=${encodedMessage}&url=${encodedlinkToShare}&via=CryptopurrC`,
+              '_blank',
+            );
+            break;
+          default:
+            newWindow = window.open(ipfsUrl, '_blank');
+        }
+
+        if (newWindow && newWindow.opener) {
+          newWindow.opener = null;
+        }
+        this.setState({ loading: false });
+      })
+      .catch((e) => {
+        this.setState({ loading: false });
+      });
   };
 }
 
