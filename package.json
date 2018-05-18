@@ -30,7 +30,7 @@
     "html-webpack-plugin": "2.29.0",
     "html2canvas": "^1.0.0-alpha.12",
     "immer": "^1.2.1",
-    "ipfs-api": "^20.2.1",
+    "ipfs-api": "^21.0.0",
     "jest": "20.0.4",
     "lodash": "^4.17.5",
     "object-assign": "4.1.1",

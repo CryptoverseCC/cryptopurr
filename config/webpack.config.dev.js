@@ -226,7 +226,7 @@ module.exports = {
       excludeChunks: ['template'],
     }),
     new HtmlWebpackPlugin({
-      inject: 'body',
+      inject: true,
       filename: 'template.html',
       template: paths.templateHtml,
       chunks: ['template'],
