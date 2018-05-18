@@ -51,23 +51,17 @@ new QRious({
 
 $footer.innerHTML = link;
 
-const $numWords = $message.textContent.split(' ').length;
-
-if ($numWords >= 1 && $numWords < 10) {
-  $message.style.fontSize = '6em';
-} else if ($numWords >= 10 && $numWords < 20) {
-  $message.style.fontSize = '4em';
-} else if ($numWords >= 20 && $numWords < 30) {
-  $message.style.fontSize = '3.5em';
-} else if ($numWords >= 30 && $numWords < 40) {
-  $message.style.fontSize = '3em';
-} else if ($numWords >= 40 && $numWords < 50) {
-  $message.style.fontSize = '2.5em';
-} else if ($numWords >= 50 && $numWords < 60) {
-  $message.style.fontSize = '2em';
-} else {
-  $message.style.fontSize = '1.5em';
-}
+const MIN_FONT_SIZE = 0.8;
+const adjustFontSize = ($element, fontSize) => {
+  if (fontSize < MIN_FONT_SIZE) {
+    return;
+  }
+  $element.style.fontSize = `${fontSize}em`;
+  if ($element.offsetHeight > $element.parentElement.offsetHeight) {
+    adjustFontSize($element, fontSize * 0.9);
+  }
+};
+adjustFontSize($message, 6);
 
 function drawImageOnCanvas(imageUrl, $canvas) {
   return fetch(`https://cors-anywhere.herokuapp.com/${imageUrl}`)

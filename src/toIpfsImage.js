@@ -1,5 +1,6 @@
-const templateUrl = 'https://userfeeds.io/purr/';
 const DEFAULT_TIMEOUT = 30 * 1000;
+const { REACT_APP_BASENAME: BASENAME } = process.env;
+const templateUrl = `${window.location.origin}${BASENAME ? `/${BASENAME}` : ''}/template.html`;
 
 export default function(content, link, etherscanUrl, tokenId) {
   return new Promise((resolve, reject) => {
@@ -25,9 +26,10 @@ export default function(content, link, etherscanUrl, tokenId) {
 
     window.addEventListener('message', onMessage);
 
-    iframe.src = `${templateUrl}?token_id=${tokenId}&etherscan_url=${encodeURIComponent(
+    const iframeUrl = `${templateUrl}?token_id=${tokenId}&etherscan_url=${encodeURIComponent(
       etherscanUrl,
     )}&link=${encodeURIComponent(link)}&content=${encodeURIComponent(content)}`;
+    iframe.src = iframeUrl;
     iframe.style.visibility = 'hidden';
     document.body.appendChild(iframe);
   });
