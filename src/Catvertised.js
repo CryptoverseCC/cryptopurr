@@ -111,24 +111,6 @@ const formatCurrency = value => {
   return (value * 10 ** -18).toFixed(3);
 };
 
-const PickEntity = styled.button`
-  border: none;
-  background: none;
-  outline: none;
-  margin: -0.375rem;
-  padding: 0.375rem 1rem;
-  width: 100%;
-  border-radius: 33px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-
-  &:hover {
-    background-color: #f4f1ff;
-    color: #623cea;
-  }
-`;
-
 const CatvertisedBody = styled.div`
   padding: 20px;
 `;
@@ -211,6 +193,18 @@ const CatvertisedScore = styled.div`
   font-weight: 500;
 `;
 
+export const FeedCatvertised = styled(({ className }) => (
+  <div className={`${className} column is-3`}>
+    <div style={{ maxWidth: '300px' }}>
+      <Catvertised />
+    </div>
+  </div>
+))`
+  align-self: flex-start;
+  position: sticky;
+  top: 80px;
+`;
+
 export default class Catvertised extends React.Component {
   state = {
     step: 'catvertised',
@@ -250,7 +244,7 @@ export default class Catvertised extends React.Component {
     return (
       <Context.Consumer>
         {({ boostStore: { boosts, boost } }) => (
-          <Catvertised.Container showBorder={this.state.step === 'catvertised'}>
+          <Catvertised.Container showBorder={this.state.step === 'catvertised'} className={this.props.className}>
             <CatvertisedBody>
               {this.state.step === 'catvertised' && (
                 <React.Fragment>
@@ -261,7 +255,7 @@ export default class Catvertised extends React.Component {
                       .sort(([, { score: a }], [, { score: b }]) => b - a)
                       .slice(0, 3)
                       .map(([id, { score }]) => (
-                        <CatvertisedItem>
+                        <CatvertisedItem key={id}>
                           <CatvertisedItemLink to={`/${id}`}>
                             <EntityAvatar size="medium" id={id} />
                             <div>
