@@ -16,6 +16,88 @@ import { ConnectedLabelForm, ReplyForm, CommentForm, ConnectedWriteToForm, Conne
 import { getFeedItems } from './api';
 import { EntityIcon } from './entityApi';
 import Link from './Link';
+import Context from './Context';
+
+const formatCurrency = (value) => {
+  return (value * 10 ** -18).toFixed(3);
+}
+
+const BoostButton = styled(({ className, amount, currency, entityId }) => (
+  <Context.Consumer>
+    {({ boostStore: { boost }, web3Store: { from } }) => (
+      <button className={className} onClick={() => boost(entityId, 100000000000000000)} disabled={!from}>
+        <BoostButton.prefix />
+        <Entity id={entityId}>
+          {({ boostValue }) => (
+            <React.Fragment>
+              <BoostButton.amount>{formatCurrency(boostValue)}</BoostButton.amount>
+            </React.Fragment>
+          )}
+        </Entity>
+        <BoostButton.currency>{currency}</BoostButton.currency>
+      </button>
+    )}
+  </Context.Consumer>
+))`
+  outline: none;
+  border: none;
+  background: white;
+  padding: 10px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  box-shadow: 0 10px 20px 0 rgba(98, 60, 234, 0.2);
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:disabled {
+    box-shadow: none;
+    cursor: initial;
+    opacity: 0.7;
+  }
+`;
+
+BoostButton.prefix = styled.div.attrs({
+  children: (
+    <span
+      style={{
+        display: 'inline-flex',
+        position: 'relative',
+        bottom: '-6px',
+        lineHeight: '1px',
+        fontSize: '2rem'
+      }}
+    >
+      ⌃
+    </span>
+  )
+})`
+  color: white;
+  border-radius: 14px;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(180deg, #9b6ff6 0%, #623cea 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+BoostButton.amount = styled.span`
+  color: #6d46eb;
+  margin-left: 10px;
+  font-weight: 500;
+  letter-spacing: 0.11px;
+`;
+
+BoostButton.currency = styled.span`
+  margin-left: 5px;
+  color: #ac98f4;
+  font-weight: 500;
+  letter-spacing: 0.11px;
+`;
 
 export default class ShowPage extends Component {
   state = { editing: undefined };
@@ -85,10 +167,16 @@ export default class ShowPage extends Component {
               </ShowPage.HeroImageContainer>
               <ShowPage.FeedContainer className="container">
                 <div className="columns">
-                  <div className="column is-6 is-offset-3">
+                  <div className="column is-3 is-offset-3">
                     <ShowPage.EntityName>
                       <EntityName id={entity.id} />
                     </ShowPage.EntityName>
+                  </div>
+                  <div
+                    className="column is-3"
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}
+                  >
+                    <BoostButton entityId={entity.id.toString()} amount={'0.015'} currency={'ETH'} />
                   </div>
                 </div>
                 <div className="columns">

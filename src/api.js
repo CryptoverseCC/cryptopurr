@@ -1,10 +1,17 @@
 import getWeb3 from './web3';
-import { contractAddressesForNetworkId, contractAbi, networkNameForNetworkId } from './contract';
+import {
+  claimContractAddressesForNetworkId,
+  claimContractAbi,
+  networkNameForNetworkId,
+  claimWithValueTransferContractAddressesForNetworkId,
+  claimWithValueTransferContractAbi
+} from './contract';
 const {
   REACT_APP_ERC_721_ADDRESS: ERC_721_ADDRESS,
   REACT_APP_USERFEEDS_API_ADDRESS: USERFEEDS_API_ADDRESS,
   REACT_APP_ERC_721_NETWORK: ERC_721_NETWORK,
-  REACT_APP_INTERFACE_VALUE: INTERFACE_VALUE
+  REACT_APP_INTERFACE_VALUE: INTERFACE_VALUE,
+  REACT_APP_INTERFACE_OWNER_ADDRESS: INTERFACE_OWNER_ADDRESS
 } = process.env;
 
 export const createUserfeedsId = entityId => `${ERC_721_NETWORK}:${ERC_721_ADDRESS}:${entityId}`;
@@ -50,7 +57,26 @@ export const getLabels = async entityId => {
     const labels = await res.json();
     return labels;
   } catch (e) {
-    return [];
+    return {};
+  }
+};
+
+export const getBoosts = async () => {
+  try {
+    const res = await fetch(
+      `${USERFEEDS_API_ADDRESS}/experimental_boost;asset=kovan;context=${INTERFACE_OWNER_ADDRESS}`
+    );
+    const { items: boosts } = await res.json();
+    const boostsMap = boosts.reduce(
+      (acc, boost) =>
+        boost.id.startsWith(`${ERC_721_NETWORK}:${ERC_721_ADDRESS}:`)
+          ? { ...acc, [boost.id.split(':')[2]]: boost }
+          : acc,
+      {}
+    );
+    return boostsMap;
+  } catch (e) {
+    return {};
   }
 };
 
@@ -81,11 +107,20 @@ export const getWeb3State = async () => {
 
 const getCreditsData = () => [{ type: 'interface', value: INTERFACE_VALUE }];
 
-const getContract = async () => {
+const getClaimContract = async () => {
   const web3 = await getWeb3();
   const { networkId } = await getWeb3State();
-  const contractAddress = contractAddressesForNetworkId[networkId];
-  const contract = new web3.eth.Contract(contractAbi, contractAddress);
+  const contractAddress = claimContractAddressesForNetworkId[networkId];
+  const contract = new web3.eth.Contract(claimContractAbi, contractAddress);
+  contract.setProvider(web3.currentProvider);
+  return contract;
+};
+
+const getClaimWithValueTransferContract = async () => {
+  const web3 = await getWeb3();
+  const { networkId } = await getWeb3State();
+  const contractAddress = claimWithValueTransferContractAddressesForNetworkId[networkId];
+  const contract = new web3.eth.Contract(claimWithValueTransferContractAbi, contractAddress);
   contract.setProvider(web3.currentProvider);
   return contract;
 };
@@ -104,11 +139,22 @@ const createFeedItemBase = async (transactionHash, token) => {
 
 const claim = async data => {
   const { from } = await getWeb3State();
-  const contract = await getContract();
+  const contract = await getClaimContract();
   return new Promise(resolve => {
     contract.methods
       .post(JSON.stringify(data))
       .send({ from })
+      .on('transactionHash', transactionHash => resolve(transactionHash));
+  });
+};
+
+const claimWithValueTransfer = async (data, value) => {
+  const { from } = await getWeb3State();
+  const contract = await getClaimWithValueTransferContract();
+  return new Promise(resolve => {
+    contract.methods
+      .post(INTERFACE_OWNER_ADDRESS, JSON.stringify(data))
+      .send({ from, value })
       .on('transactionHash', transactionHash => resolve(transactionHash));
   });
 };
@@ -193,4 +239,13 @@ export const label = async (token, message, labelType) => {
     type: 'labels',
     labels: [labelType]
   };
+};
+
+export const boost = async (entityId, value) => {
+  const data = {
+    claim: { target: createUserfeedsId(entityId) },
+    credits: getCreditsData()
+  };
+  const transactionHash = await claimWithValueTransfer(data, value);
+  return 'eureka';
 };

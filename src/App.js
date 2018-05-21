@@ -7,7 +7,7 @@ import produce from 'immer';
 import Context from './Context';
 import IndexPage from './IndexPage';
 import ShowPage from './ShowPage';
-import { getMyEntities, getWeb3State, sendMessage, reply, react, label, writeTo, getLabels } from './api';
+import { getMyEntities, getWeb3State, sendMessage, reply, react, label, writeTo, getLabels, getBoosts, boost } from './api';
 import { getEntityData } from './entityApi';
 import Header from './Header';
 import { PositionedFooter } from './Footer';
@@ -46,6 +46,7 @@ export default class App extends Component {
     temporaryFeedItems: [],
     temporaryReplies: {},
     temporaryReactions: {},
+    boosts: {},
     from: undefined,
     provider: undefined,
     networkName: undefined
@@ -56,6 +57,7 @@ export default class App extends Component {
     setInterval(this.refreshWeb3State, 2000);
     this.refreshMyEntities();
     setInterval(this.refreshMyEntities, 15000);
+    this.getBoosts();
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -109,15 +111,23 @@ export default class App extends Component {
     if (!entityInfo) this.getEntityInfo(entityId);
     const entityLabels = this.state.entityLabels[entityId];
     if (!entityLabels) this.getEntityLabels(entityId);
+    const boost = this.state.boosts[entityId] || { score: 0 };
+    const boostValue = boost.score;
     return {
       image_url: undefined,
       color: undefined,
       id: entityId,
       name: undefined,
+      boostValue,
       ...entityInfo,
       ...entityLabels
     };
   };
+
+  getBoosts = async () => {
+    const boosts = await getBoosts();
+    this.setState({boosts});
+  }
 
   sendMessage = async message => {
     const temporaryFeedItem = await sendMessage(this.state.activeEntity.token, message);
@@ -231,7 +241,8 @@ export default class App extends Component {
       allowAddingFeedItem,
       provider,
       from,
-      networkName
+      networkName,
+      boosts
     } = this.state;
     return (
       <Context.Provider
@@ -251,6 +262,10 @@ export default class App extends Component {
             temporaryReplies,
             temporaryReactions,
             allowAddingFeedItem
+          },
+          boostStore: {
+            boost,
+            boosts
           },
           web3Store: {
             provider,
