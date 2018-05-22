@@ -242,10 +242,11 @@ export const label = async (token, message, labelType) => {
 };
 
 export const boost = async (entityId, value) => {
+  const { networkName } = await getWeb3State();
   const data = {
     claim: { target: createUserfeedsId(entityId) },
     credits: getCreditsData()
   };
   const transactionHash = await claimWithValueTransfer(data, value);
-  return 'eureka';
+  return { transactionHash, networkName };
 };

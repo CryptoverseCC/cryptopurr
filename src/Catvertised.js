@@ -53,9 +53,9 @@ const Position = styled.div`
 
 const StyledButton = styled.button`
   height: 60px;
-  width: calc(100% + 40px);
+  width: calc(100% + 44px);
   background: linear-gradient(180deg, #9b6ff6 0%, #623cea 100%);
-  margin: 18px -20px -20px;
+  margin: 18px -22px -22px;
   color: white;
   font-size: 18px;
   font-weight: 500;
@@ -123,6 +123,8 @@ const CatvertisedTitle = styled.div`
 `;
 
 const AddAKitty = styled.button`
+  margin-top: 10px;
+  align-self: flex-start;
   border: none;
   outline: none;
   background: none;
@@ -141,8 +143,22 @@ const CatvertisedItem = styled.li`
   height: 54px;
   display: flex;
   align-items: center;
+  position: relative;
   & + & {
     margin-top: 20px;
+  }
+
+  &:nth-child(3):before {
+    content: '';
+    display: block;
+    position: absolute;
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, #FFFFFF 100%);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 1;
+    pointer-events: none;
   }
 `;
 
@@ -205,6 +221,11 @@ export const FeedCatvertised = styled(({ className }) => (
   top: 80px;
 `;
 
+const createEtherscanUrl = (transactionHash, networkName) => {
+  const familyPrefix = networkName === 'ethereum' ? '' : `${networkName}.`;
+  return `https://${familyPrefix}etherscan.io/tx/${transactionHash}`;
+};
+
 export default class Catvertised extends React.Component {
   state = {
     step: 'catvertised',
@@ -218,7 +239,8 @@ export default class Catvertised extends React.Component {
     flex-direction: column;
     box-shadow: 0 4px 10px 0 rgba(98, 60, 234, 0.07);
     border-radius: 12px;
-    ${({ showBorder }) => (showBorder ? 'border: 2px solid #cdf5d4;' : '')};
+    padding: 20px;
+    ${({ showBorder }) => (showBorder ? 'border: 2px solid #cdf5d4' : 'border 2px solid transparent')};
   `;
 
   calculatePosition = boosts => {
@@ -245,125 +267,130 @@ export default class Catvertised extends React.Component {
       <Context.Consumer>
         {({ boostStore: { boosts, boost } }) => (
           <Catvertised.Container showBorder={this.state.step === 'catvertised'} className={this.props.className}>
-            <CatvertisedBody>
-              {this.state.step === 'catvertised' && (
-                <React.Fragment>
-                  <CatvertisedTitle>Catvertised</CatvertisedTitle>
-                  <AddAKitty onClick={() => this.setState({ step: 'pickCat' })}>Add a kittie</AddAKitty>
-                  <CatvertisedList>
-                    {Object.entries(boosts)
-                      .sort(([, { score: a }], [, { score: b }]) => b - a)
-                      .slice(0, 3)
-                      .map(([id, { score }]) => (
-                        <CatvertisedItem key={id}>
-                          <CatvertisedItemLink to={`/${id}`}>
-                            <EntityAvatar size="medium" id={id} />
-                            <div>
-                              <CatvertisedName>
-                                <b>
-                                  <EntityName id={id} />
-                                </b>
-                              </CatvertisedName>
-                              <CatvertisedScore>{formatCurrency(score)} ETH</CatvertisedScore>
-                            </div>
-                          </CatvertisedItemLink>
+            {this.state.step === 'catvertised' && (
+              <React.Fragment>
+                <CatvertisedTitle>Catvertised</CatvertisedTitle>
+                <AddAKitty onClick={() => this.setState({ step: 'pickCat' })}>Add a kittie</AddAKitty>
+                <CatvertisedList>
+                  {Object.entries(boosts)
+                    .sort(([, { score: a }], [, { score: b }]) => b - a)
+                    .slice(0, 3)
+                    .map(([id, { score }]) => (
+                      <CatvertisedItem key={id}>
+                        <CatvertisedItemLink to={`/${id}`}>
+                          <EntityAvatar size="medium" id={id} />
+                          <div>
+                            <CatvertisedName>
+                              <b>
+                                <EntityName id={id} />
+                              </b>
+                            </CatvertisedName>
+                            <CatvertisedScore>{formatCurrency(score)} ETH</CatvertisedScore>
+                          </div>
+                        </CatvertisedItemLink>
+                      </CatvertisedItem>
+                    ))}
+                </CatvertisedList>
+              </React.Fragment>
+            )}
+            {this.state.step === 'pickCat' && (
+              <React.Fragment>
+                <CatvertisedTitle>Catvertise a kittie</CatvertisedTitle>
+                <CustomCatForm>
+                  <EntityAvatar size="medium" id={this.state.customCatId} />
+                  <CustomCatFormInput>
+                    <input
+                      style={{
+                        fontSize: '18px',
+                        fontWeight: 500,
+                        color: '#623cea',
+                        width: 'calc(100% - 40px)',
+                        padding: '15px',
+                        height: '57px',
+                        background: 'none',
+                        outline: 'none',
+                        border: 'none'
+                      }}
+                      type="text"
+                      value={this.state.customCatId}
+                      onChange={e => {
+                        this.setState({ customCatId: e.target.value });
+                      }}
+                      placeholder="Other cat id"
+                    />
+                    <CustomCatFormButton
+                      disabled={!this.state.customCatId}
+                      onClick={() => this.setState({ step: 'form', entityId: this.state.customCatId })}
+                    >
+                      ✔
+                    </CustomCatFormButton>
+                  </CustomCatFormInput>
+                </CustomCatForm>
+                <CatvertisedList>
+                  <Entities>
+                    {({ entities }) =>
+                      entities.map(entity => (
+                        <CatvertisedItem>
+                          <CatvertisedItemButton onClick={() => this.setState({ step: 'form', entityId: entity.id })}>
+                            <EntityAvatar size="medium" id={entity.id} />
+                            <CatvertisedName>
+                              <b>
+                                <EntityName id={entity.id} />
+                              </b>
+                            </CatvertisedName>
+                          </CatvertisedItemButton>
                         </CatvertisedItem>
-                      ))}
-                  </CatvertisedList>
-                </React.Fragment>
-              )}
-              {this.state.step === 'pickCat' && (
-                <React.Fragment>
-                  <CatvertisedTitle>Catvertise a kittie</CatvertisedTitle>
-                  <CustomCatForm>
-                    <EntityAvatar size="medium" id={this.state.customCatId} />
-                    <CustomCatFormInput>
-                      <input
-                        style={{
-                          fontSize: '18px',
-                          fontWeight: 500,
-                          color: '#623cea',
-                          width: 'calc(100% - 40px)',
-                          padding: '15px',
-                          height: '57px',
-                          background: 'none',
-                          outline: 'none',
-                          border: 'none'
-                        }}
-                        type="text"
-                        value={this.state.customCatId}
-                        onChange={e => {
-                          this.setState({ customCatId: e.target.value });
-                        }}
-                        placeholder="Other cat id"
-                      />
-                      <CustomCatFormButton
-                        disabled={!this.state.customCatId}
-                        onClick={() => this.setState({ step: 'form', entityId: this.state.customCatId })}
-                      >
-                        ✔
-                      </CustomCatFormButton>
-                    </CustomCatFormInput>
-                  </CustomCatForm>
-                  <CatvertisedList>
-                    <Entities>
-                      {({ entities }) =>
-                        entities.map(entity => (
-                          <CatvertisedItem>
-                            <CatvertisedItemButton onClick={() => this.setState({ step: 'form', entityId: entity.id })}>
-                              <EntityAvatar size="medium" id={entity.id} />
-                              <CatvertisedName>
-                                <b>
-                                  <EntityName id={entity.id} />
-                                </b>
-                              </CatvertisedName>
-                            </CatvertisedItemButton>
-                          </CatvertisedItem>
-                        ))
-                      }
-                    </Entities>
-                  </CatvertisedList>
-                </React.Fragment>
-              )}
-              {this.state.step === 'form' && (
-                <React.Fragment>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <LinkedEntityAvatar size="medium" id={this.state.entityId} />
-                    <CatvertisedName>
-                      <b>
-                        <EntityName id={this.state.entityId} />
-                      </b>
-                    </CatvertisedName>
-                  </div>
-                  <div style={{ fontSize: '18px', fontWeight: '500', marginTop: '20px' }}>Catvertise with</div>
-                  <StyledInput
-                    type="text"
-                    value={this.state.value}
-                    onChange={e => {
-                      this.setState({ value: e.target.value });
-                    }}
-                  />
-                  <Position>Position: #{this.calculatePosition(boosts)}</Position>
-                  <StyledButton
-                    onClick={() => {
-                      boost(this.state.entityId, this.state.value * 10 ** 18);
-                    }}
-                  >
-                    Catvertise!
-                  </StyledButton>
-                </React.Fragment>
-              )}
-              {this.state.step === 'submitted' && (
-                <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'center', alignItems: 'center' }}>
-                  <div style={{ color: 'green', fontSize: '24px' }}>✔</div>
-                  <div style={{ fontWeight: 500, fontSize: '32px', color: '#060310' }}>Success!</div>
-                  <div style={{ fontSize: '18px' }}>
-                    You've catvertised <EntityName id={this.state.entityId} />
-                  </div>
-                  <A>See it on Etherscan</A>
+                      ))
+                    }
+                  </Entities>
+                </CatvertisedList>
+              </React.Fragment>
+            )}
+            {this.state.step === 'form' && (
+              <React.Fragment>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <LinkedEntityAvatar size="medium" id={this.state.entityId} />
+                  <CatvertisedName>
+                    <b>
+                      <EntityName id={this.state.entityId} />
+                    </b>
+                  </CatvertisedName>
                 </div>
-              )}
-            </CatvertisedBody>
+                <div style={{ fontSize: '18px', fontWeight: '500', marginTop: '20px' }}>Catvertise with</div>
+                <StyledInput
+                  type="text"
+                  value={this.state.value}
+                  onChange={e => {
+                    this.setState({ value: e.target.value });
+                  }}
+                />
+                <Position>Position: #{this.calculatePosition(boosts)}</Position>
+                <StyledButton
+                  onClick={async () => {
+                    const { transactionHash, networkName } = await boost(
+                      this.state.entityId,
+                      this.state.value * 10 ** 18
+                    );
+                    this.setState({
+                      etherscanUrl: createEtherscanUrl(transactionHash, networkName),
+                      step: 'submitted'
+                    });
+                  }}
+                >
+                  Catvertise!
+                </StyledButton>
+              </React.Fragment>
+            )}
+            {this.state.step === 'submitted' && (
+              <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'center', alignItems: 'center' }}>
+                <div style={{ color: 'green', fontSize: '24px' }}>✔</div>
+                <div style={{ fontWeight: 500, fontSize: '32px', color: '#060310' }}>Success!</div>
+                <div style={{ fontSize: '18px' }}>
+                  You've catvertised <EntityName id={this.state.entityId} />
+                </div>
+                <A href={this.state.etherscanUrl}>See it on Etherscan</A>
+              </div>
+            )}
           </Catvertised.Container>
         )}
       </Context.Consumer>
