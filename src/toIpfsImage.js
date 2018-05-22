@@ -1,4 +1,4 @@
-const DEFAULT_TIMEOUT = 30 * 1000;
+const DEFAULT_TIMEOUT = 45 * 1000;
 const { REACT_APP_BASENAME: BASENAME } = process.env;
 const templateUrl = `${window.location.origin}${BASENAME ? `/${BASENAME}` : ''}/template.html`;
 
@@ -14,7 +14,11 @@ export default function(content, link, etherscanUrl, tokenId) {
     const onMessage = (event) => {
       if (event.source === iframe.contentWindow) {
         clearTimeout(timeoutID);
-        resolve(`https://ipfs.io/ipfs/${event.data}`);
+        if (event.data && event.data.type === 'ipfsHash') {
+          resolve(`https://ipfs.io/ipfs/${event.data.ipfsHash}`);
+        } else {
+          reject(event.data);
+        }
         clean();
       }
     };

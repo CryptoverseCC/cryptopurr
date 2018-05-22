@@ -37,7 +37,7 @@ fetch(`https://api.cryptokitties.co/kitties/${token_id}`)
       shoot($container)
         .then((blob) => uploadToIpfs(blob))
         .then((ipfsHash) => {
-          window.parent.postMessage(ipfsHash, '*');
+          window.parent.postMessage({ type: 'ipfsHash', ipfsHash }, '*');
         });
     }
   });
