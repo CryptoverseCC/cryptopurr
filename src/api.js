@@ -11,10 +11,12 @@ const {
   REACT_APP_USERFEEDS_API_ADDRESS: USERFEEDS_API_ADDRESS,
   REACT_APP_ERC_721_NETWORK: ERC_721_NETWORK,
   REACT_APP_INTERFACE_VALUE: INTERFACE_VALUE,
-  REACT_APP_INTERFACE_OWNER_ADDRESS: INTERFACE_OWNER_ADDRESS
+  REACT_APP_INTERFACE_BOOST_ADDRESS: INTERFACE_BOOST_ADDRESS,
+  REACT_APP_INTERFACE_BOOST_NETWORK: INTERFACE_BOOST_NETWORK
 } = process.env;
 
-export const createUserfeedsId = entityId => `${ERC_721_NETWORK}:${ERC_721_ADDRESS}:${entityId}`;
+export const createUserfeedsId = entityId =>
+  `${ERC_721_NETWORK}:${ERC_721_ADDRESS}:${entityId}`;
 
 let lastFeedItemRequestTime = new Date(0);
 
@@ -30,7 +32,9 @@ export const getFeedItems = async entityId => {
   );
   let { items: feedItems } = await response.json();
   feedItems = feedItems.filter(feedItem =>
-    ['regular', 'like', 'post_to', 'response', 'post_about', 'labels'].includes(feedItem.type)
+    ['regular', 'like', 'post_to', 'response', 'post_about', 'labels'].includes(
+      feedItem.type
+    )
   );
   lastFeedItemRequestTime = new Date();
   return feedItems;
@@ -53,7 +57,11 @@ export const getMyEntities = async () => {
 
 export const getLabels = async entityId => {
   try {
-    const res = await fetch(`${USERFEEDS_API_ADDRESS}/cryptopurr_profile;context=${createUserfeedsId(entityId)}`);
+    const res = await fetch(
+      `${USERFEEDS_API_ADDRESS}/cryptopurr_profile;context=${createUserfeedsId(
+        entityId
+      )}`
+    );
     const labels = await res.json();
     return labels;
   } catch (e) {
@@ -64,7 +72,7 @@ export const getLabels = async entityId => {
 export const getBoosts = async () => {
   try {
     const res = await fetch(
-      `${USERFEEDS_API_ADDRESS}/experimental_boost;asset=kovan;context=${INTERFACE_OWNER_ADDRESS}`
+      `${USERFEEDS_API_ADDRESS}/experimental_boost;asset=${INTERFACE_BOOST_NETWORK};context=${INTERFACE_BOOST_ADDRESS}`
     );
     const { items: boosts } = await res.json();
     const boostsMap = boosts.reduce(
@@ -91,7 +99,15 @@ export const getWeb3State = async () => {
     ]);
     const networkName = networkNameForNetworkId[networkId];
     const provider = web3.currentProvider;
-    return { from, isListening, networkId, blockNumber, web3, networkName, provider };
+    return {
+      from,
+      isListening,
+      networkId,
+      blockNumber,
+      web3,
+      networkName,
+      provider
+    };
   } catch (e) {
     return {
       from: undefined,
@@ -119,8 +135,12 @@ const getClaimContract = async () => {
 const getClaimWithValueTransferContract = async () => {
   const web3 = await getWeb3();
   const { networkId } = await getWeb3State();
-  const contractAddress = claimWithValueTransferContractAddressesForNetworkId[networkId];
-  const contract = new web3.eth.Contract(claimWithValueTransferContractAbi, contractAddress);
+  const contractAddress =
+    claimWithValueTransferContractAddressesForNetworkId[networkId];
+  const contract = new web3.eth.Contract(
+    claimWithValueTransferContractAbi,
+    contractAddress
+  );
   contract.setProvider(web3.currentProvider);
   return contract;
 };
@@ -153,7 +173,7 @@ const claimWithValueTransfer = async (data, value) => {
   const contract = await getClaimWithValueTransferContract();
   return new Promise(resolve => {
     contract.methods
-      .post(INTERFACE_OWNER_ADDRESS, JSON.stringify(data))
+      .post(INTERFACE_BOOST_ADDRESS, JSON.stringify(data))
       .send({ from, value })
       .on('transactionHash', transactionHash => resolve(transactionHash));
   });
