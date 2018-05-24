@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { pageView } from './Analytics';
-import { ConnectedFeed, FeedContainer } from './Feed';
+import { ConnectedFeed } from './Feed';
 import {
   Entity,
   EntityName,
@@ -16,7 +16,6 @@ import { ConnectedLabelForm, ReplyForm, CommentForm, ConnectedWriteToForm, Conne
 import { getFeedItems } from './api';
 import { EntityIcon } from './entityApi';
 import Link from './Link';
-import Context from './Context';
 import { FeedCatvertised } from './Catvertised';
 
 export default class ShowPage extends Component {
@@ -87,7 +86,7 @@ export default class ShowPage extends Component {
               </ShowPage.HeroImageContainer>
               <ShowPage.FeedContainer className="container">
                 <div className="columns">
-                  <div className="column is-3 is-offset-3">
+                  <div className="column is-6 is-offset-3">
                     <ShowPage.EntityName>
                       <EntityName id={entity.id} />
                     </ShowPage.EntityName>

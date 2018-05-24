@@ -2,12 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Link, { A } from './Link';
 import Context from './Context';
-import {
-  LinkedEntityAvatar,
-  EntityName,
-  Entities,
-  EntityAvatar
-} from './Entity';
+import { LinkedEntityAvatar, EntityName, Entities, EntityAvatar } from './Entity';
 
 const StyledInput = styled.div.attrs({
   children: props => (
@@ -119,10 +114,6 @@ const formatCurrency = value => {
   return (value * 10 ** -18).toFixed(3);
 };
 
-const CatvertisedBody = styled.div`
-  padding: 20px;
-`;
-
 const CatvertisedTitle = styled.div`
   font-family: Rubik;
   font-size: 1.2rem;
@@ -141,10 +132,21 @@ const AddAKitty = styled.button`
   font-size: 0.8rem;
   padding: 0;
   cursor: pointer;
+
+  @media (max-width: 770px) {
+    margin-top: auto;
+    margin-left: 10px;
+  }
 `;
 
 const CatvertisedList = styled.ul`
   margin-top: 20px;
+
+  @media (max-width: 770px) {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
 `;
 
 const CatvertisedItem = styled.li`
@@ -152,19 +154,17 @@ const CatvertisedItem = styled.li`
   display: flex;
   align-items: center;
   position: relative;
+  flex-shrink: 0;
   & + & {
     margin-top: 20px;
   }
 
-  &:nth-child(3):before {
+  &:nth-child(3):before,
+  &:nth-child(5):before {
     content: '';
     display: block;
     position: absolute;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0) 0%,
-      #ffffff 100%
-    );
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 100%);
     bottom: 0;
     left: 0;
     right: 0;
@@ -172,11 +172,65 @@ const CatvertisedItem = styled.li`
     z-index: 1;
     pointer-events: none;
   }
+
+  &:nth-child(3):before,
+  &:nth-child(4), 
+  &:nth-child(5) {
+    display: none;
+  }
+
+  @media (max-width: 770px) {
+    overflow: hidden;
+    height: auto;
+    width: 54px;
+    
+    & + & {
+      margin-top: 0;
+    }
+
+    &:nth-child(3):before {
+      display: none;
+    }
+
+    &:nth-child(5):before {
+      display: block;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #ffffff 100%);
+    }
+
+    &:nth-child(4), 
+    &:nth-child(5) {
+      display: flex;
+    }
+  
+  }
 `;
+
+
+const CatvertisedPickCatList = styled(CatvertisedList)`
+  @media (max-width: 770px) {
+    justify-content: normal;
+    overflow-x: scroll;
+  }
+
+  ${CatvertisedItem}:before {
+    display: none;
+  }
+
+  ${CatvertisedItem} + ${CatvertisedItem} {
+    margin-left: 10px;
+  }
+`
 
 const CatvertisedItemLink = styled(Link)`
   display: flex;
   align-items: center;
+
+  @media (max-width: 770px) {
+    flex-direction: column;
+    align-items: normal;
+    text-align: center;
+    width: 100%;
+  }
 `;
 
 const CatvertisedItemButton = styled.button`
@@ -212,6 +266,11 @@ const CatvertisedItemButton = styled.button`
 
 const CatvertisedName = styled.span`
   margin-left: 10px;
+
+  @media (max-width: 770px) {
+    margin-left: 0;
+    white-space: nowrap;
+  }
 `;
 
 const CatvertisedScore = styled.div`
@@ -219,24 +278,56 @@ const CatvertisedScore = styled.div`
   font-size: 14px;
   color: #928f9b;
   font-weight: 500;
+
+  @media (max-width: 770px) {
+    margin-left: 0;
+  }
+`;
+
+const FeedCatvertisedContainer = styled.div`
+  max-width: 300px;
+
+  @media (max-width: 770px) {
+    max-width: none;
+  }
 `;
 
 export const FeedCatvertised = styled(({ className }) => (
   <div className={`${className} column is-3`}>
-    <div style={{ maxWidth: '300px' }}>
+    <FeedCatvertisedContainer>
       <Catvertised />
-    </div>
+    </FeedCatvertisedContainer>
   </div>
 ))`
   align-self: flex-start;
   position: sticky;
   top: 80px;
+  @media (max-width: 770px) {
+    position: static;
+  }
 `;
 
 const createEtherscanUrl = (transactionHash, networkName) => {
   const familyPrefix = networkName === 'ethereum' ? '' : `${networkName}.`;
   return `https://${familyPrefix}etherscan.io/tx/${transactionHash}`;
 };
+
+const CatvertisedHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 770px) {
+    flex-direction: row;
+    align-items: baseline;
+  }
+`
+
+const EntityDescription = styled.div`
+  @media (max-width: 770px) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+`
 
 export default class Catvertised extends React.Component {
   state = {
@@ -252,10 +343,7 @@ export default class Catvertised extends React.Component {
     box-shadow: 0 4px 10px 0 rgba(98, 60, 234, 0.07);
     border-radius: 12px;
     padding: 20px;
-    ${({ showBorder }) =>
-      showBorder
-        ? 'border: 2px solid #cdf5d4'
-        : 'border 2px solid transparent'};
+    ${({ showBorder }) => (showBorder ? 'border: 2px solid #cdf5d4' : 'border 2px solid transparent')};
   `;
 
   calculatePosition = boosts => {
@@ -281,35 +369,30 @@ export default class Catvertised extends React.Component {
     return (
       <Context.Consumer>
         {({ boostStore: { boosts, boost, isBoostable } }) => (
-          <Catvertised.Container
-            showBorder={this.state.step === 'catvertised'}
-            className={this.props.className}
-          >
+          <Catvertised.Container showBorder={this.state.step === 'catvertised'} className={this.props.className}>
             {this.state.step === 'catvertised' && (
               <React.Fragment>
-                <CatvertisedTitle>Catvertised</CatvertisedTitle>
-                <AddAKitty onClick={() => this.setState({ step: 'pickCat' })}>
-                  Add a kittie
-                </AddAKitty>
+                <CatvertisedHeader>
+                  <CatvertisedTitle>Catvertised</CatvertisedTitle>
+                  <AddAKitty onClick={() => this.setState({ step: 'pickCat' })}>Add a kittie</AddAKitty>
+                </CatvertisedHeader>
                 {Object.keys(boosts).length > 0 && (
                   <CatvertisedList>
                     {Object.entries(boosts)
                       .sort(([, { score: a }], [, { score: b }]) => b - a)
-                      .slice(0, 3)
+                      .slice(0, 5)
                       .map(([id, { score }]) => (
                         <CatvertisedItem key={id}>
                           <CatvertisedItemLink to={`/${id}`}>
                             <EntityAvatar size="medium" id={id} />
-                            <div>
+                            <EntityDescription>
                               <CatvertisedName>
                                 <b>
                                   <EntityName id={id} />
                                 </b>
                               </CatvertisedName>
-                              <CatvertisedScore>
-                                {formatCurrency(score)} ETH
-                              </CatvertisedScore>
-                            </div>
+                              <CatvertisedScore>{formatCurrency(score)} ETH</CatvertisedScore>
+                            </EntityDescription>
                           </CatvertisedItemLink>
                         </CatvertisedItem>
                       ))}
@@ -358,7 +441,7 @@ export default class Catvertised extends React.Component {
                 <Entities>
                   {({ entities }) =>
                     entities.length > 0 && (
-                      <CatvertisedList>
+                      <CatvertisedPickCatList>
                         {entities.map(entity => (
                           <CatvertisedItem>
                             <CatvertisedItemButton
@@ -378,7 +461,7 @@ export default class Catvertised extends React.Component {
                             </CatvertisedItemButton>
                           </CatvertisedItem>
                         ))}
-                      </CatvertisedList>
+                      </CatvertisedPickCatList>
                     )
                   }
                 </Entities>
@@ -421,10 +504,7 @@ export default class Catvertised extends React.Component {
                           this.state.value * 10 ** 18
                         );
                         this.setState({
-                          etherscanUrl: createEtherscanUrl(
-                            transactionHash,
-                            networkName
-                          ),
+                          etherscanUrl: createEtherscanUrl(transactionHash, networkName),
                           step: 'submitted'
                         });
                       }}

@@ -497,7 +497,9 @@ class Card extends React.Component {
 
 export const FeedContainer = styled(({ children, className }) => (
   <div className={`${className} container`}>
-    <div className="columns">{children}</div>
+    <div className="columns" style={{ marginTop: 0 }}>
+      {children}
+    </div>
   </div>
 ))`
   padding: 40px 0.75rem;
