@@ -1,3 +1,4 @@
+/*global CryptoGoods:true*/
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { pageView } from './Analytics';
@@ -277,6 +278,27 @@ export class SocialBadges extends React.Component {
         <SocialBadge>
           <Badge activeColor={socialColors.github} href={normalizeHref(github)} children={<GithubIcon />} />
           <EditButton labelType="github" />
+        </SocialBadge>
+        <SocialBadge>
+          <Badge activeColor={socialColors.github} onClick={() => {
+            console.log(id);
+            CryptoGoods.open({
+              // [required] : The token to display (must be owned by calling user)
+              token_id: id,
+              // [optional] : Add this line while testing. Delete this line for production.
+              test: true,
+              // [optional] : The product to display initially
+              product: 'mug',
+              // [optional] : Used to avoid collisions between token IDs between different contracts
+              contract_name: 'CryptoKitties',
+              // [optional] : Used to avoid collisions between token IDs between different contracts
+              contract_address: '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d',
+              // [optional] : For tracking purchases to your website (format: http[s]://example.com)
+              referrer: "https://cryptopurr.co",
+              // [optional] : A CSS branding color for matching your websites branding within the cart
+              brand_color: "#85D40C",      
+            });
+          }} children={<GithubIcon />} />
         </SocialBadge>
         {this.state.editing && (
           <LabelModal onClose={this.editLabel(undefined)}>
