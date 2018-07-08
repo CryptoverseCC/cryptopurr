@@ -12,7 +12,7 @@ import {
   ActiveEntityName
 } from './Entity';
 import Modal from './Modal';
-import { FacebookIcon, GithubIcon, TwitterIcon, InstagramIcon, socialColors } from './Icons';
+import { FacebookIcon, GithubIcon, TwitterIcon, InstagramIcon, ExternalLink, socialColors } from './Icons';
 import { ConnectedLabelForm, ReplyForm, CommentForm, ConnectedWriteToForm, ConnectedCommentForm } from './CommentForm';
 import { EntityIcon } from './entityApi';
 import Link from './Link';
@@ -280,7 +280,7 @@ export class SocialBadges extends React.Component {
           <EditButton labelType="github" />
         </SocialBadge>
         <SocialBadge>
-          <Badge activeColor={socialColors.github} onClick={() => {
+          <Badge activeColor={socialColors.cryptogoods} onClick={() => {
             CryptoGoods.open({
               // [required] : The token to display (must be owned by calling user)
               token_id: id,
@@ -297,7 +297,7 @@ export class SocialBadges extends React.Component {
               // [optional] : A CSS branding color for matching your websites branding within the cart
               brand_color: "#85D40C",      
             });
-          }} children={<GithubIcon />} />
+          }} children={<ExternalLink />} />
         </SocialBadge>
         {this.state.editing && (
           <LabelModal onClose={this.editLabel(undefined)}>
