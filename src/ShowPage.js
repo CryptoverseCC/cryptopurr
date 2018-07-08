@@ -281,7 +281,6 @@ export class SocialBadges extends React.Component {
         </SocialBadge>
         <SocialBadge>
           <Badge activeColor={socialColors.github} onClick={() => {
-            console.log(id);
             CryptoGoods.open({
               // [required] : The token to display (must be owned by calling user)
               token_id: id,
