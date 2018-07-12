@@ -90,7 +90,7 @@ const Label = ({ onClick, liked, count }) => {
 };
 
 export const sanitizeMessage = message => {
-  const expression = /(https?:\/\/[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,4}\b(?:[-a-zA-Z0-9@;:%_+.~#?&//=]*))/g;
+  const expression = /(https?:\/\/[^.,?!:;\s]+(?:[.,?!:;]+[^.,?!:;\s]+)+/g;
   const replaceMatchWithLink = match => {
     return `<a href="${match}">${escapeHtml(match)}</a>`;
   };
