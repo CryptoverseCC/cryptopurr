@@ -1,3 +1,4 @@
+/*global CryptoGoods:true*/
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
@@ -77,6 +78,7 @@ class Share extends Component {
               <React.Fragment>
                 <ShareItem onClick={(e) => this.share('tweet', e)}>Tweet it</ShareItem>
                 <ShareItem onClick={(e) => this.share('image', e)}>Get an image</ShareItem>
+                <ShareItem onClick={(e) => this.share('cryptogoods', e)}>Buy at cryptogoods.co</ShareItem>
               </React.Fragment>
             )}
           </SharePopup>
@@ -110,6 +112,28 @@ class Share extends Component {
               `https://twitter.com/intent/tweet?text=${encodedMessage}&url=${encodedlinkToShare}&via=CryptopurrC`,
               '_blank',
             );
+            break;
+          case 'cryptogoods':
+            CryptoGoods.open({
+              // [required] : The token to display (must be owned by calling user)
+              token_id: '127',
+              // [optional] : Add this line while testing. Delete this line for production.
+              test: true,
+              // [optional] : The product to display initially
+              product: 'mug',
+              // [optional] : Used to avoid collisions between token IDs between different contracts
+              contract_name: 'CryptoKitties',
+              // [optional] : Used to avoid collisions between token IDs between different contracts
+              contract_address: '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d',
+              // [optional] : For tracking purchases to your website (format: http[s]://example.com)
+              referrer: "https://cryptopurr.co",
+              // [optional] : A CSS branding color for matching your websites branding within the cart
+              brand_color: "#85D40C",
+              // [optional] : Payload containing additional data
+              payload: {
+                  image_url: ipfsUrl,
+              }
+            });
             break;
           default:
             newWindow = window.open(ipfsUrl, '_blank');
